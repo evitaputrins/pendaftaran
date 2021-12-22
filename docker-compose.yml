@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  php-apache-environment:
+    image: evitapns/kuis2
+    container_name: php-apache-uas2
+    links:
+    - "db"
+    depends_on:
+      - db
+    volumes:
+      - ./:/var/www/html/
+    ports:
+      - 8090:80
+    networks:
+      - backend
+
+  db:
+    container_name: db_uas2
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ALLOW_RANDOM_PASSWORD=1
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE= db_pendaftaran
+    ports:
+      - "9906:3306"
+    volumes:
+      - db:/var/lib/mysql
+      - ./db_pendaftaran.sql:/docker-entrypoint-initdb.d/testing.sql
+    networks:
+      - backend
+
+volumes:
+  db:
+
+networks:
+  backend:
+    name: backend-network
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
